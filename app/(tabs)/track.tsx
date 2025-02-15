@@ -11,6 +11,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { format } from 'date-fns';
 import { router } from 'expo-router';
+import { useEffect } from 'react';
 
 const healthIssues = [
   'Respiratory Issues',
@@ -34,6 +35,7 @@ export default function TrackScreen() {
   const [healthBriefs, sethealthBriefs] = useState('');
   const [selectedIssues, setSelectedIssues] = useState<string[]>([]);
   const [healthScore, setHealthScore] = useState(5);
+  const [entries, setEntries] = useState<Record<string, any[]>>({});
 
   const toggleIssue = (issue: string) => {
     setSelectedIssues((prev) =>
@@ -69,12 +71,29 @@ export default function TrackScreen() {
       </View>
     );
   };
+  
 
+  useEffect(() => {
+    const loadEntries = async () => {
+      try {
+        const today = format(new Date(), 'yyyy-MM-dd'); // Get today's date
+        const savedEntries = await AsyncStorage.getItem(`health_${today}`);
+        if (savedEntries) {
+          setEntries(JSON.parse(savedEntries)); // Update state with loaded entries
+        }
+      } catch (error) {
+        console.error('Error loading entries:', error);
+      }
+    };
+  
+    loadEntries(); // Call function on component mount
+  }, []);
+  
   const saveEntry = async () => {
     try {
       const today = format(new Date(), 'yyyy-MM-dd');
       const time = format(new Date(), 'h:mm a');
-
+  
       const entry = {
         mood,
         stress,
@@ -85,13 +104,21 @@ export default function TrackScreen() {
         healthScore,
         time,
       };
-
+  
       const existingData = await AsyncStorage.getItem(`health_${today}`);
-      const entries = existingData ? JSON.parse(existingData) : [];
-      entries.push(entry);
-
-      await AsyncStorage.setItem(`health_${today}`, JSON.stringify(entries));
-
+      const newEntries = existingData ? JSON.parse(existingData) : [];
+  
+      newEntries.push(entry);
+      
+      // Save to AsyncStorage
+      await AsyncStorage.setItem(`health_${today}`, JSON.stringify(newEntries));
+  
+      // Update state immediately for instant UI update
+      setEntries((prevEntries) => ({
+        ...prevEntries,
+        [today]: newEntries,
+      }));
+  
       // Reset form
       setMood(5);
       setStress(5);
@@ -100,12 +127,12 @@ export default function TrackScreen() {
       sethealthBriefs('');
       setSelectedIssues([]);
       setHealthScore(5);
-
-      router.push('/');
+  
     } catch (error) {
       console.error('Error saving entry:', error);
     }
   };
+  
 
   return (
     <ScrollView
@@ -125,7 +152,7 @@ export default function TrackScreen() {
       </View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>How angry are you >:(</Text>
+        <Text style={styles.sectionTitle}>How angwry are you?</Text>
         {renderScaleButtons(anger, setAnger)}
       </View>
 

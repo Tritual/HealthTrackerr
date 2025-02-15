@@ -1,3 +1,5 @@
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback } from 'react';
 import React, { useEffect, useState } from 'react';
 import {
   View,
@@ -19,9 +21,12 @@ export default function HistoryScreen() {
   );
   const [calendarExpanded, setCalendarExpanded] = useState(false);
 
-  useEffect(() => {
-    loadAllData();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadAllData();
+    }, [])
+  );
+  
 
   const loadAllData = async () => {
     try {

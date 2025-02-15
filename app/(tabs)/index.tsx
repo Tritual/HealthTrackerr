@@ -1,3 +1,5 @@
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback } from 'react';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useEffect, useState } from 'react';
@@ -13,9 +15,11 @@ export default function Dashboard() {
     health: 0,
   });
 
-  useEffect(() => {
-    loadTodayData();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadTodayData();
+    }, [])
+  );  
 
   const loadTodayData = async () => {
     try {
@@ -48,7 +52,8 @@ export default function Dashboard() {
     });
   };
 
-  return (
+
+  return (    
     <ScrollView
       style={[styles.container, { paddingTop: insets.top }]}
       contentContainerStyle={styles.content}
@@ -79,7 +84,11 @@ export default function Dashboard() {
             <Text style={styles.entryTime}>{entry.time}</Text>
             <Text style={styles.entryDetail}>Mood: {entry.mood}/10</Text>
             <Text style={styles.entryDetail}>Stress: {entry.stress}/10</Text>
-            <Text style={styles.entryDetail}>Fever: {entry.fever}°F</Text>
+            {entry.fever && (
+              <Text style={styles.entryDetail}>
+                {entry.fever}°F
+              </Text>
+            )} 
             {entry.stressReasons && (
               <Text style={styles.entryDetail}>
                 Stress reasons: {entry.stressReasons}
