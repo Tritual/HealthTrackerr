@@ -28,6 +28,10 @@
       "eas": {
         "projectId": "75f86be0-44de-4259-9cd8-e8106e6aa45a"
       }
+    },
+    "owner": "tritual",
+    "cli": {
+      "appVersionSource": "remote"
     }
   }
 }
