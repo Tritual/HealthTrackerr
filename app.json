@@ -11,6 +11,10 @@
     "ios": {
       "supportsTablet": true
     },
+    "android": {
+      "package": "com.yourname.healthtracker",
+      "versionCode": 1
+    },
     "web": {
       "bundler": "metro",
       "output": "single",
@@ -19,6 +23,11 @@
     "plugins": ["expo-router"],
     "experiments": {
       "typedRoutes": true
+    },
+    "extra": {
+      "eas": {
+        "projectId": "75f86be0-44de-4259-9cd8-e8106e6aa45a"
+      }
     }
   }
 }
